@@ -1,0 +1,74 @@
+# GitLab CI/CD Pipeline for IIT Palakkad Website
+# Deploys to Vercel automatically on push to main branch
+
+image: node:18-alpine
+
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  NODE_ENV: production
+  VERCEL_ORG_ID: $VERCEL_ORG_ID
+  VERCEL_PROJECT_ID: $VERCEL_PROJECT_ID
+
+cache:
+  paths:
+    - node_modules/
+    - .next/cache/
+
+# Install dependencies
+before_script:
+  - npm ci --cache .npm --prefer-offline
+
+# Test stage - Run linting and type checking
+test:
+  stage: test
+  script:
+    - npm run lint
+    - npx tsc --noEmit
+  only:
+    - main
+    - merge_requests
+
+# Build stage - Test production build
+build:
+  stage: build
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - .next/
+    expire_in: 1 hour
+  only:
+    - main
+
+# Deploy to Vercel
+deploy_production:
+  stage: deploy
+  image: node:18-alpine
+  before_script:
+    - npm install -g vercel
+  script:
+    - vercel --token $VERCEL_TOKEN --prod --yes
+  environment:
+    name: production
+    url: https://iit-palakkad.vercel.app
+  only:
+    - main
+  when: manual
+
+# Deploy preview for merge requests
+deploy_preview:
+  stage: deploy
+  image: node:18-alpine
+  before_script:
+    - npm install -g vercel
+  script:
+    - vercel --token $VERCEL_TOKEN --yes
+  environment:
+    name: preview
+  only:
+    - merge_requests
+  when: manual
