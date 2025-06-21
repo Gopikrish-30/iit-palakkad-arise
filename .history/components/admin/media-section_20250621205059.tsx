@@ -73,9 +73,7 @@ export default function MediaSection() {
   const loadMediaFiles = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch('/api/media', {
-        credentials: 'include', // Include authentication cookies
-      })
+      const response = await fetch('/api/media')
       const data = await response.json()
 
       if (data.success) {
@@ -158,7 +156,6 @@ export default function MediaSection() {
     try {
       const response = await fetch(`/api/media/${id}`, {
         method: 'DELETE',
-        credentials: 'include', // Include authentication cookies
       })
 
       const data = await response.json()

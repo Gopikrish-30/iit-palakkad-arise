@@ -85,43 +85,26 @@ export function getSubDirectory(type: 'image' | 'video' | 'document'): string {
   }
 }
 
-// Get image dimensions
-async function getImageDimensions(buffer: Buffer, mimeType: string): Promise<string> {
-  try {
-    // For now, return "Unknown" - in a real app you'd use a library like 'sharp' or 'image-size'
-    // But those require native dependencies which can complicate deployment
-    return "Unknown"
-  } catch (error) {
-    return "Unknown"
-  }
-}
-
 // Save uploaded file
 export async function saveUploadedFile(
   file: File,
   description?: string
 ): Promise<MediaFile> {
   await ensureUploadsDir()
-
+  
   const fileType = getFileType(file.type)
   const subDir = getSubDirectory(fileType)
   const uniqueFilename = generateUniqueFilename(file.name)
   const filePath = path.join(UPLOADS_DIR, subDir, uniqueFilename)
   const publicUrl = `/uploads/${subDir}/${uniqueFilename}`
-
+  
   // Convert File to Buffer
   const bytes = await file.arrayBuffer()
   const buffer = Buffer.from(bytes)
-
+  
   // Save file to disk
   await writeFile(filePath, buffer)
-
-  // Get dimensions for images
-  let dimensions = "N/A"
-  if (fileType === 'image') {
-    dimensions = await getImageDimensions(buffer, file.type)
-  }
-
+  
   // Create media file object
   const mediaFile: MediaFile = {
     id: `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
@@ -129,7 +112,6 @@ export async function saveUploadedFile(
     originalName: file.name,
     type: fileType,
     size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
-    dimensions,
     uploadDate: new Date().toISOString().split('T')[0],
     url: publicUrl,
     usedIn: [],
