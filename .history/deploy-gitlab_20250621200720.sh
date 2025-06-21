@@ -39,19 +39,18 @@ npm run build
 if [ $? -eq 0 ]; then
     echo "✅ Build successful!"
     
-    # Commit and push to GitHub
-    echo "📤 Pushing to GitHub..."
+    # Commit and push to GitLab
+    echo "📤 Pushing to GitLab..."
     git add .
     git commit -m "Production ready deployment - $(date '+%Y-%m-%d %H:%M:%S')"
-    git branch -M main
-    git push -u origin main
-
+    git push origin main
+    
     echo ""
-    echo "🎉 Successfully pushed to GitHub!"
+    echo "🎉 Successfully pushed to GitLab!"
     echo ""
     echo "🌐 Next steps:"
-    echo "1. Go to https://github.com/Gopikrish-30/iit-palakkad-arise"
-    echo "2. Set up Vercel integration (see GITHUB-DEPLOYMENT.md)"
+    echo "1. Go to https://gitlab.com/Gopikrish-30/iit-palakkad"
+    echo "2. Set up Vercel integration (see GITLAB-DEPLOYMENT.md)"
     echo "3. Configure environment variables in Vercel"
     echo "4. Deploy!"
     echo ""
@@ -63,7 +62,7 @@ if [ $? -eq 0 ]; then
     echo "- MAX_LOGIN_ATTEMPTS (default: 5)"
     echo "- LOCKOUT_DURATION (default: 15m)"
     echo ""
-    echo "📖 Full deployment guide: GITHUB-DEPLOYMENT.md"
+    echo "📖 Full deployment guide: GITLAB-DEPLOYMENT.md"
 else
     echo "❌ Build failed. Please fix the errors above before deploying."
     exit 1

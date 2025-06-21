@@ -63,7 +63,7 @@ if [ $? -eq 0 ]; then
     echo "- MAX_LOGIN_ATTEMPTS (default: 5)"
     echo "- LOCKOUT_DURATION (default: 15m)"
     echo ""
-    echo "📖 Full deployment guide: GITHUB-DEPLOYMENT.md"
+    echo "📖 Full deployment guide: GITLAB-DEPLOYMENT.md"
 else
     echo "❌ Build failed. Please fix the errors above before deploying."
     exit 1
