@@ -34,18 +34,9 @@ async function ensureUploadsDir() {
   }
 }
 
-// In-memory storage for production (since we can't write to file system)
-let inMemoryMediaData: MediaFile[] = []
-
-// Load media data from JSON file or memory
+// Load media data from JSON file
 export async function loadMediaData(): Promise<MediaFile[]> {
   try {
-    // In production, use in-memory storage
-    if (process.env.NODE_ENV === 'production') {
-      return inMemoryMediaData
-    }
-
-    // In development, try to use file system
     if (!existsSync(MEDIA_DATA_FILE)) {
       return []
     }
@@ -57,21 +48,14 @@ export async function loadMediaData(): Promise<MediaFile[]> {
   }
 }
 
-// Save media data to JSON file or memory
+// Save media data to JSON file
 export async function saveMediaData(mediaFiles: MediaFile[]): Promise<void> {
   try {
-    // In production, use in-memory storage
-    if (process.env.NODE_ENV === 'production') {
-      inMemoryMediaData = [...mediaFiles]
-      return
-    }
-
-    // In development, try to save to file system
     await ensureUploadsDir()
     await writeFile(MEDIA_DATA_FILE, JSON.stringify(mediaFiles, null, 2))
   } catch (error) {
-    console.warn('Failed to save to file system, using memory:', error)
-    inMemoryMediaData = [...mediaFiles]
+    console.error('Error saving media data:', error)
+    throw error
   }
 }
 
@@ -185,27 +169,25 @@ export async function deleteMediaFile(id: string): Promise<boolean> {
   try {
     const mediaFiles = await loadMediaData()
     const fileIndex = mediaFiles.findIndex(f => f.id === id)
-
+    
     if (fileIndex === -1) {
       return false
     }
-
+    
     const file = mediaFiles[fileIndex]
-
-    // Delete physical file (only in development)
-    if (process.env.NODE_ENV !== 'production' && !file.url.startsWith('data:')) {
-      const filePath = path.join(process.cwd(), 'public', file.url)
-      if (existsSync(filePath)) {
-        await unlink(filePath)
-      }
+    
+    // Delete physical file
+    const filePath = path.join(process.cwd(), 'public', file.url)
+    if (existsSync(filePath)) {
+      await unlink(filePath)
     }
-
+    
     // Remove from data
     mediaFiles.splice(fileIndex, 1)
-
+    
     // Save updated data
     await saveMediaData(mediaFiles)
-
+    
     return true
   } catch (error) {
     console.error('Error deleting media file:', error)

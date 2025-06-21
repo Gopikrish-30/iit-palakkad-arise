@@ -185,27 +185,25 @@ export async function deleteMediaFile(id: string): Promise<boolean> {
   try {
     const mediaFiles = await loadMediaData()
     const fileIndex = mediaFiles.findIndex(f => f.id === id)
-
+    
     if (fileIndex === -1) {
       return false
     }
-
+    
     const file = mediaFiles[fileIndex]
-
-    // Delete physical file (only in development)
-    if (process.env.NODE_ENV !== 'production' && !file.url.startsWith('data:')) {
-      const filePath = path.join(process.cwd(), 'public', file.url)
-      if (existsSync(filePath)) {
-        await unlink(filePath)
-      }
+    
+    // Delete physical file
+    const filePath = path.join(process.cwd(), 'public', file.url)
+    if (existsSync(filePath)) {
+      await unlink(filePath)
     }
-
+    
     // Remove from data
     mediaFiles.splice(fileIndex, 1)
-
+    
     // Save updated data
     await saveMediaData(mediaFiles)
-
+    
     return true
   } catch (error) {
     console.error('Error deleting media file:', error)
