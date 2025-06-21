@@ -1,4 +1,4 @@
-# 🎓 IIT Palakkad Research Lab Website
+# 🎓 IIT Palakkad - Pavement Engineering
 
 A modern, responsive website for IIT Palakkad Research Laboratory with a comprehensive admin panel for content management.
 
