@@ -23,19 +23,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate file size - Vercel has 4.5MB limit for serverless functions
+    // Validate file size - different limits for different types
     let maxSize: number
     let errorMessage: string
 
     if (file.type.startsWith('image/')) {
-      maxSize = 4 * 1024 * 1024 // 4MB for images (under Vercel limit)
-      errorMessage = 'Image size too large. Maximum size is 4MB for deployment compatibility. Please compress your image.'
+      maxSize = 10 * 1024 * 1024 // 10MB for images
+      errorMessage = 'Image size too large. Maximum size is 10MB. For web use, consider optimizing to 1-2MB.'
     } else if (file.type.startsWith('video/')) {
-      maxSize = 4 * 1024 * 1024 // 4MB for videos (under Vercel limit)
-      errorMessage = 'Video size too large. Maximum size is 4MB for deployment compatibility.'
+      maxSize = 100 * 1024 * 1024 // 100MB for videos
+      errorMessage = 'Video size too large. Maximum size is 100MB.'
     } else {
-      maxSize = 4 * 1024 * 1024 // 4MB for documents (under Vercel limit)
-      errorMessage = 'File size too large. Maximum size is 4MB for deployment compatibility.'
+      maxSize = 50 * 1024 * 1024 // 50MB for documents
+      errorMessage = 'File size too large. Maximum size is 50MB.'
     }
 
     if (file.size > maxSize) {

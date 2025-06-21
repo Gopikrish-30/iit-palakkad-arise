@@ -99,67 +99,27 @@ export default function MediaSection() {
     }
   }
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const originalFile = event.target.files?.[0]
-    if (!originalFile) return
-
-    try {
-      let fileToUse = originalFile
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      // Check file size (4MB limit for Vercel compatibility)
       const maxSize = 4 * 1024 * 1024 // 4MB
-
-      // Check if file needs compression
-      if (needsCompression(originalFile, 4)) {
-        if (canCompress(originalFile)) {
-          toast({
-            title: "Compressing Image",
-            description: `File size is ${formatFileSize(originalFile.size)}. Compressing to fit 4MB limit...`,
-          })
-
-          try {
-            fileToUse = await compressImage(originalFile, {
-              maxSizeMB: 3.5, // Leave some buffer
-              maxWidthOrHeight: 1920,
-              quality: 0.8
-            })
-
-            toast({
-              title: "Image Compressed",
-              description: `Compressed from ${formatFileSize(originalFile.size)} to ${formatFileSize(fileToUse.size)}`,
-            })
-          } catch (compressionError) {
-            console.error('Compression failed:', compressionError)
-            toast({
-              title: "Compression Failed",
-              description: "Could not compress image. Please manually reduce file size.",
-              variant: "destructive"
-            })
-            event.target.value = ''
-            return
-          }
-        } else {
-          toast({
-            title: "File Too Large",
-            description: `File size is ${formatFileSize(originalFile.size)}. Maximum allowed is 4MB. This file type cannot be automatically compressed.`,
-            variant: "destructive"
-          })
-          event.target.value = ''
-          return
-        }
+      if (file.size > maxSize) {
+        toast({
+          title: "File Too Large",
+          description: `File size is ${(file.size / (1024 * 1024)).toFixed(1)}MB. Maximum allowed is 4MB. Please compress your file.`,
+          variant: "destructive"
+        })
+        // Clear the input
+        event.target.value = ''
+        return
       }
 
       setUploadForm({
         ...uploadForm,
-        file: fileToUse,
-        name: originalFile.name, // Keep original name
+        file,
+        name: file.name,
       })
-    } catch (error) {
-      console.error('File upload error:', error)
-      toast({
-        title: "Error",
-        description: "Failed to process file",
-        variant: "destructive"
-      })
-      event.target.value = ''
     }
   }
 

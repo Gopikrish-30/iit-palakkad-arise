@@ -131,23 +131,17 @@ export async function saveUploadedFile(
   console.log('File processing:', { fileType, subDir, uniqueFilename })
 
   // Convert File to Buffer
-  console.log('Converting file to buffer...')
   const bytes = await file.arrayBuffer()
   const buffer = Buffer.from(bytes)
-  console.log('Buffer created, size:', buffer.length)
 
   // For production deployment, we'll use a data URL instead of file system
   // In a real production app, you'd use cloud storage like AWS S3, Cloudinary, etc.
   let publicUrl: string
 
-  console.log('Environment:', process.env.NODE_ENV)
-
   if (process.env.NODE_ENV === 'production') {
-    console.log('Using data URL for production')
     // Create a data URL for production (temporary solution)
     const base64 = buffer.toString('base64')
     publicUrl = `data:${file.type};base64,${base64}`
-    console.log('Data URL created, length:', publicUrl.length)
   } else {
     // For development, try to save to file system
     try {
