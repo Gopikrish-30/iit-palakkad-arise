@@ -34,7 +34,7 @@ export async function hashPassword(password: string, salt?: string): Promise<str
  * Verify password against hash
  */
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  const [salt] = hash.split(':')
+  const [salt, hashedPassword] = hash.split(':')
   const testHash = await hashPassword(password, salt)
   return testHash === hash
 }

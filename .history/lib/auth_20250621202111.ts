@@ -18,24 +18,21 @@ export interface AuthPayload {
 }
 
 /**
- * Hash password using Web Crypto API (Edge Runtime compatible)
+ * Hash password using Node.js crypto
  */
-export async function hashPassword(password: string, salt?: string): Promise<string> {
-  const actualSalt = salt || Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join('')
-  const encoder = new TextEncoder()
-  const data = encoder.encode(password + actualSalt)
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-  return actualSalt + ':' + hashHex
+export function hashPassword(password: string, salt?: string): string {
+  const actualSalt = salt || randomBytes(16).toString('hex')
+  const hash = createHash('sha256')
+  hash.update(password + actualSalt)
+  return actualSalt + ':' + hash.digest('hex')
 }
 
 /**
  * Verify password against hash
  */
-export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  const [salt] = hash.split(':')
-  const testHash = await hashPassword(password, salt)
+export function verifyPassword(password: string, hash: string): boolean {
+  const [salt, hashedPassword] = hash.split(':')
+  const testHash = hashPassword(password, salt)
   return testHash === hash
 }
 
