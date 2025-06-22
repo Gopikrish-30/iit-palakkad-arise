@@ -1,7 +1,6 @@
 "use client"
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { loadAppData, saveAppData } from './data-storage';
 
 // Types
 export interface Person {
@@ -844,7 +843,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [aboutContent, setAboutContent] = useState<AboutContent>(initialAboutContent)
   const [joinUsContent, setJoinUsContent] = useState<JoinUsContent>(initialJoinUsContent)
 
-// Load data from storage on mount and periodically check for updates
+  import { loadAppData, saveAppData } from './data-storage';
+
+// Load data from storage on mount
   useEffect(() => {
     const loadData = async () => {
       const data = await loadAppData();
@@ -862,13 +863,6 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       if (data.joinUsContent) setJoinUsContent(data.joinUsContent);
     };
     loadData();
-    
-    // Set up an interval to check for updates in localStorage every 5 seconds
-    const interval = setInterval(() => {
-      loadData();
-    }, 5000);
-    
-    return () => clearInterval(interval);
   }, []);
 
     // Save to storage whenever data changes
@@ -912,12 +906,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   // Publications functions
   const addPublication = (publication: Omit<Publication, 'id'>) => {
     const newPublication = { ...publication, id: Date.now() }
-    console.log("Data context: Adding publication", newPublication)
-    setPublications(prev => {
-      const updated = [...prev, newPublication]
-      console.log("Data context: Updated publications list", updated)
-      return updated
-    })
+    setPublications(prev => [...prev, newPublication])
   }
 
   const updatePublication = (id: number, updates: Partial<Publication>) => {
@@ -1044,6 +1033,66 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   // Join Us content functions
   const updateJoinUsContent = (updates: Partial<JoinUsContent>) => {
     setJoinUsContent(prev => ({ ...prev, ...updates }))
+  }
+
+  const value: DataContextType = {
+    people,
+    addPerson,
+    updatePerson,
+    deletePerson,
+    publications,
+    addPublication,
+    updatePublication,
+    deletePublication,
+    achievements,
+    addAchievement,
+    updateAchievement,
+    deleteAchievement,
+    instruments,
+    addInstrument,
+    updateInstrument,
+    deleteInstrument,
+    courses,
+    addCourse,
+    updateCourse,
+    deleteCourse,
+    homeContent,
+    updateHomeContent,
+    news,
+    addNews,
+    updateNews,
+    deleteNews,
+    contactInfo,
+    updateContactInfo,
+    events,
+    addEvent,
+    updateEvent,
+    deleteEvent,
+    alumni,
+    addAlumni,
+    updateAlumni,
+    deleteAlumni,
+    aboutContent,
+    updateAboutContent,
+    joinUsContent,
+    updateJoinUsContent,
+  }
+
+  return (
+    <DataContext.Provider value={value}>
+      {children}
+    </DataContext.Provider>
+  )
+}
+
+// Hook
+export function useData() {
+  const context = useContext(DataContext)
+  if (context === undefined) {
+    throw new Error('useData must be used within a DataProvider')
+  }
+  return context
+}
   }
 
   const value: DataContextType = {

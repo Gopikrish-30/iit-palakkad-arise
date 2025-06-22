@@ -1,7 +1,6 @@
 "use client"
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { loadAppData, saveAppData } from './data-storage';
 
 // Types
 export interface Person {
@@ -844,7 +843,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [aboutContent, setAboutContent] = useState<AboutContent>(initialAboutContent)
   const [joinUsContent, setJoinUsContent] = useState<JoinUsContent>(initialJoinUsContent)
 
-// Load data from storage on mount and periodically check for updates
+  import { loadAppData, saveAppData } from './data-storage';
+
+// Load data from storage on mount
   useEffect(() => {
     const loadData = async () => {
       const data = await loadAppData();
@@ -862,13 +863,6 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       if (data.joinUsContent) setJoinUsContent(data.joinUsContent);
     };
     loadData();
-    
-    // Set up an interval to check for updates in localStorage every 5 seconds
-    const interval = setInterval(() => {
-      loadData();
-    }, 5000);
-    
-    return () => clearInterval(interval);
   }, []);
 
     // Save to storage whenever data changes
@@ -887,11 +881,71 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         alumni,
         aboutContent,
         joinUsContent
-      };
-      await saveAppData(data);
-    };
-    saveData();
-  }, [people, publications, achievements, instruments, courses, homeContent, news, contactInfo, events, alumni, aboutContent, joinUsContent]);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lab-publications', JSON.stringify(publications))
+    }
+  }, [publications])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lab-achievements', JSON.stringify(achievements))
+    }
+  }, [achievements])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lab-instruments', JSON.stringify(instruments))
+    }
+  }, [instruments])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lab-courses', JSON.stringify(courses))
+    }
+  }, [courses])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lab-home-content', JSON.stringify(homeContent))
+    }
+  }, [homeContent])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lab-news', JSON.stringify(news))
+    }
+  }, [news])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lab-contact-info', JSON.stringify(contactInfo))
+    }
+  }, [contactInfo])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lab-events', JSON.stringify(events))
+    }
+  }, [events])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lab-alumni', JSON.stringify(alumni))
+    }
+  }, [alumni])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lab-about-content', JSON.stringify(aboutContent))
+    }
+  }, [aboutContent])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lab-join-us-content', JSON.stringify(joinUsContent))
+    }
+  }, [joinUsContent])
 
   // People functions
   const addPerson = (person: Omit<Person, 'id'>) => {
@@ -912,12 +966,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   // Publications functions
   const addPublication = (publication: Omit<Publication, 'id'>) => {
     const newPublication = { ...publication, id: Date.now() }
-    console.log("Data context: Adding publication", newPublication)
-    setPublications(prev => {
-      const updated = [...prev, newPublication]
-      console.log("Data context: Updated publications list", updated)
-      return updated
-    })
+    setPublications(prev => [...prev, newPublication])
   }
 
   const updatePublication = (id: number, updates: Partial<Publication>) => {

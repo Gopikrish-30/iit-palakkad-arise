@@ -57,8 +57,6 @@ export default function PublicationsSection() {
       ...formData,
       authors: formData.authors.split(",").map((a) => a.trim()),
     }
-
-    console.log("Adding new publication:", newPublication)
     addPublication(newPublication)
     resetForm()
     setIsAddDialogOpen(false)

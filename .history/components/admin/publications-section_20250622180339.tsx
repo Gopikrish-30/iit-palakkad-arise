@@ -57,8 +57,6 @@ export default function PublicationsSection() {
       ...formData,
       authors: formData.authors.split(",").map((a) => a.trim()),
     }
-
-    console.log("Adding new publication:", newPublication)
     addPublication(newPublication)
     resetForm()
     setIsAddDialogOpen(false)
@@ -107,33 +105,30 @@ export default function PublicationsSection() {
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2 space-y-2">
-                <Label htmlFor="title">Title <span className="text-red-500">*</span></Label>
+                <Label htmlFor="title">Title</Label>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="Enter publication title"
-                  required
                 />
               </div>
               <div className="col-span-2 space-y-2">
-                <Label htmlFor="authors">Authors (comma-separated) <span className="text-red-500">*</span></Label>
+                <Label htmlFor="authors">Authors (comma-separated)</Label>
                 <Input
                   id="authors"
                   value={formData.authors}
                   onChange={(e) => setFormData({ ...formData, authors: e.target.value })}
                   placeholder="e.g., Dr. John Doe, Jane Smith"
-                  required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="journal">Journal/Conference <span className="text-red-500">*</span></Label>
+                <Label htmlFor="journal">Journal/Conference</Label>
                 <Input
                   id="journal"
                   value={formData.journal}
                   onChange={(e) => setFormData({ ...formData, journal: e.target.value })}
                   placeholder="Enter journal or conference name"
-                  required
                 />
               </div>
               <div className="space-y-2">
@@ -146,8 +141,8 @@ export default function PublicationsSection() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="type">Type <span className="text-red-500">*</span></Label>
-                <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })} required>
+                <Label htmlFor="type">Type</Label>
+                <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>

@@ -57,8 +57,6 @@ export default function PublicationsSection() {
       ...formData,
       authors: formData.authors.split(",").map((a) => a.trim()),
     }
-
-    console.log("Adding new publication:", newPublication)
     addPublication(newPublication)
     resetForm()
     setIsAddDialogOpen(false)
@@ -146,8 +144,8 @@ export default function PublicationsSection() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="type">Type <span className="text-red-500">*</span></Label>
-                <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })} required>
+                <Label htmlFor="type">Type</Label>
+                <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>

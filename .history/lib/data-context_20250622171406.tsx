@@ -862,13 +862,6 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       if (data.joinUsContent) setJoinUsContent(data.joinUsContent);
     };
     loadData();
-    
-    // Set up an interval to check for updates in localStorage every 5 seconds
-    const interval = setInterval(() => {
-      loadData();
-    }, 5000);
-    
-    return () => clearInterval(interval);
   }, []);
 
     // Save to storage whenever data changes
@@ -912,12 +905,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   // Publications functions
   const addPublication = (publication: Omit<Publication, 'id'>) => {
     const newPublication = { ...publication, id: Date.now() }
-    console.log("Data context: Adding publication", newPublication)
-    setPublications(prev => {
-      const updated = [...prev, newPublication]
-      console.log("Data context: Updated publications list", updated)
-      return updated
-    })
+    setPublications(prev => [...prev, newPublication])
   }
 
   const updatePublication = (id: number, updates: Partial<Publication>) => {
